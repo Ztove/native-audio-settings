@@ -44,16 +44,6 @@ public class NativeAudioSettingsPlugin extends Plugin {
         bridge.getActivity().registerReceiver(listener, new IntentFilter("android.media.VOLUME_CHANGED_ACTION"));
     }
 
-
-    @PluginMethod
-    public void echo(PluginCall call) {
-        String value = call.getString("value");
-
-        JSObject ret = new JSObject();
-        ret.put("value", implementation.echo(value));
-        call.resolve(ret);
-    }
-
     @PluginMethod()
     public void getNotificationVolume(PluginCall call) {
         Context context = this.bridge.getActivity();
