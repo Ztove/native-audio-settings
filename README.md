@@ -50,13 +50,13 @@ getNotificationVolume() => Promise<{ notificationVolume: number; maxNotification
 ### addListener('notificationVolumeChange', ...)
 
 ```typescript
-addListener(eventName: 'notificationVolumeChange', listenerFunc: (info: { notificationVolume: number; }) => void) => Promise<{ remove: () => void; }>
+addListener(eventName: 'notificationVolumeChange', listenerFunc: (info: { notificationVolume: number; maxNotificationVolume: number; }) => void) => Promise<{ remove: () => void; }>
 ```
 
-| Param              | Type                                                            |
-| ------------------ | --------------------------------------------------------------- |
-| **`eventName`**    | <code>'notificationVolumeChange'</code>                         |
-| **`listenerFunc`** | <code>(info: { notificationVolume: number; }) =&gt; void</code> |
+| Param              | Type                                                                                           |
+| ------------------ | ---------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code>'notificationVolumeChange'</code>                                                        |
+| **`listenerFunc`** | <code>(info: { notificationVolume: number; maxNotificationVolume: number; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;{ remove: () =&gt; void; }&gt;</code>
 
