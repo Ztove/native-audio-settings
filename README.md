@@ -14,6 +14,9 @@ npx cap sync
 <docgen-index>
 
 * [`echo(...)`](#echo)
+* [`getMainVolume()`](#getmainvolume)
+* [`getNotificationVolume()`](#getnotificationvolume)
+* [`addListener('notificationVolumeChange', ...)`](#addlistenernotificationvolumechange)
 
 </docgen-index>
 
@@ -31,6 +34,44 @@ echo(options: { value: string; }) => Promise<{ value: string; }>
 | **`options`** | <code>{ value: string; }</code> |
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
+
+--------------------
+
+
+### getMainVolume()
+
+```typescript
+getMainVolume() => Promise<{ mainVolume: number; maxMainVolume: number; }>
+```
+
+**Returns:** <code>Promise&lt;{ mainVolume: number; maxMainVolume: number; }&gt;</code>
+
+--------------------
+
+
+### getNotificationVolume()
+
+```typescript
+getNotificationVolume() => Promise<{ notificationVolume: number; maxNotificationVolume: number; }>
+```
+
+**Returns:** <code>Promise&lt;{ notificationVolume: number; maxNotificationVolume: number; }&gt;</code>
+
+--------------------
+
+
+### addListener('notificationVolumeChange', ...)
+
+```typescript
+addListener(eventName: 'notificationVolumeChange', listenerFunc: (info: { notificationVolume: number; }) => void) => Promise<{ remove: () => void; }>
+```
+
+| Param              | Type                                                            |
+| ------------------ | --------------------------------------------------------------- |
+| **`eventName`**    | <code>'notificationVolumeChange'</code>                         |
+| **`listenerFunc`** | <code>(info: { notificationVolume: number; }) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;{ remove: () =&gt; void; }&gt;</code>
 
 --------------------
 
