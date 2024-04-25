@@ -1,6 +1,6 @@
 {
   "name": "native-audio-settings",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "This Capacitor plugin allows retrieving the current media volume level on a device. The plugin includes methods to read the volume level on both Android and iOS platforms.",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
