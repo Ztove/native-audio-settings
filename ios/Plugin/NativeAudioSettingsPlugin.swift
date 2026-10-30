@@ -10,23 +10,37 @@ import MediaPlayer
 @objc(NativeAudioSettingsPlugin)
 public class NativeAudioSettingsPlugin: CAPPlugin {
     private let implementation = NativeAudioSettings()
-    private var volumeValueObservation: NSKeyValueObservation?
+    private var lastNotifiedVolume: Float?
 
     override public func load() {
-        do {
-            let audioSession = AVAudioSession.sharedInstance()
-            try audioSession.setActive(true)
-            
-            volumeValueObservation = audioSession.observe(\.outputVolume) { av, _ in
-                let notificationVolume = av.outputVolume
-                let maxNotificationVolume = self.getMaxVolume()
-
-                let eventData: [String: Any] = ["notificationVolume": notificationVolume, "maxNotificationVolume": maxNotificationVolume]
-                self.notifyListeners("notificationVolumeChange", data: eventData)
-            }
-        } catch let error {
-            print(">>> ERROR: Unable to set audio session active: \(error)")
+        // Private notifications, so we don't have to activate the audio session (which would stop other apps' audio).
+        // iOS 15+ posts SystemVolumeDidChange, older versions AVSystemController_SystemVolumeDidChangeNotification.
+        for name in ["SystemVolumeDidChange", "AVSystemController_SystemVolumeDidChangeNotification"] {
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(volumeDidChange(_:)),
+                name: NSNotification.Name(rawValue: name),
+                object: nil
+            )
         }
+    }
+
+    @objc private func volumeDidChange(_ notification: Notification) {
+        // outputVolume can be stale while the audio session is inactive, so prefer the value from the notification
+        let userInfoVolume = (notification.userInfo?["Volume"] ?? notification.userInfo?["AVSystemController_AudioVolumeNotificationParameter"]) as? Float
+        let notificationVolume = userInfoVolume ?? AVAudioSession.sharedInstance().outputVolume
+        // Both notifications can fire for the same change
+        if notificationVolume == lastNotifiedVolume {
+            return
+        }
+        lastNotifiedVolume = notificationVolume
+        let maxNotificationVolume = getMaxVolume()
+        let eventData: [String: Any] = ["notificationVolume": notificationVolume, "maxNotificationVolume": maxNotificationVolume]
+        self.notifyListeners("notificationVolumeChange", data: eventData)
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 
     @objc func getMainVolume(_ call: CAPPluginCall) {
@@ -49,11 +63,20 @@ public class NativeAudioSettingsPlugin: CAPPlugin {
     }
 
     private func getMaxVolume() -> Float {
-        let volumeView = MPVolumeView()
         var maxVolume: Float = 1.0
 
-        if let view = volumeView.subviews.first as? UISlider {
-            maxVolume = view.maximumValue
+        if Thread.isMainThread {
+            let volumeView = MPVolumeView()
+            if let view = volumeView.subviews.first as? UISlider {
+                maxVolume = view.maximumValue
+            }
+        } else {
+            DispatchQueue.main.sync {
+                let volumeView = MPVolumeView()
+                if let view = volumeView.subviews.first as? UISlider {
+                    maxVolume = view.maximumValue
+                }
+            }
         }
 
         return maxVolume

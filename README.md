@@ -18,7 +18,7 @@ npx cap sync
 
 * [`getMainVolume()`](#getmainvolume)
 * [`getNotificationVolume()`](#getnotificationvolume)
-* [`addListener('notificationVolumeChange', ...)`](#addlistenernotificationvolumechange)
+* [`addListener('notificationVolumeChange', ...)`](#addlistenernotificationvolumechange-)
 
 </docgen-index>
 
